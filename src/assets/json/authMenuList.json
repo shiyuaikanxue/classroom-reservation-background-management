@@ -18,7 +18,7 @@
     {
       "path": "/schools",
       "name": "schools",
-      "component": "/levels/useProTable/index",
+      "component": "/schools/useProTable/index",
       "meta": {
         "icon": "Histogram",
         "title": "学校管理",

@@ -2,7 +2,7 @@
   <el-dropdown trigger="click">
     <div class="avatar">
       <!-- <img src="@/assets/images/avatar.gif" alt="avatar" /> -->
-      <img :src="avatar" alt="avatar" />
+      <img :src="avatar" alt="avatar" @error="handleImageError" />
     </div>
     <template #dropdown>
       <el-dropdown-menu>
@@ -36,7 +36,7 @@ import PasswordDialog from "./PasswordDialog.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
-const avatar = userStore.userInfo.avatar;
+const avatar = ref(userStore.userInfo.avatar);
 // 退出登录
 const logout = () => {
   ElMessageBox.confirm("您是否确认退出登录?", "温馨提示", {
@@ -57,7 +57,9 @@ const logout = () => {
     ElMessage.success("退出登录成功！");
   });
 };
-
+const handleImageError = () => {
+  avatar.value = new URL("@/assets/images/avatar.gif", import.meta.url).href;
+};
 // 打开修改密码和个人信息弹窗
 const infoRef = ref<InstanceType<typeof InfoDialog> | null>(null);
 const passwordRef = ref<InstanceType<typeof PasswordDialog> | null>(null);

@@ -9,13 +9,8 @@
       @drag-sort="sortTable"
     >
       <!-- 表格 header 按钮 -->
-      <template #tableHeader="scope">
-        <el-button type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增等级</el-button>
-        <!-- <el-button v-auth="'batchAdd'" type="primary" :icon="Upload" plain @click="batchAdd">批量添加用户</el-button> -->
-        <!-- <el-button v-auth="'export'" type="primary" :icon="Download" plain @click="downloadFile">导出用户数据</el-button> -->
-        <el-button type="danger" :icon="Delete" plain :disabled="!scope.isSelected" @click="batchDelete(scope.selectedListIds)">
-          批量删除
-        </el-button>
+      <template #tableHeader>
+        <el-button type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增学校</el-button>
       </template>
       <!-- Expand -->
       <template #expand="scope">
@@ -35,6 +30,7 @@
       </template>
       <!-- 表格操作 -->
       <template #operation="scope">
+        <el-button type="primary" link :icon="UserFilled">管理员账号</el-button>
         <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">查看</el-button>
         <el-button type="primary" link :icon="PictureRounded" @click="openDrawer('编辑', scope.row)">编辑</el-button>
         <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">删除</el-button>
@@ -47,8 +43,9 @@
 
 <script setup lang="tsx" name="useProTable">
 import { ref, reactive, onMounted } from "vue";
+
 import { useRoute, useRouter } from "vue-router";
-import { Group, Levels, User } from "@/api/interface";
+import { Group, Schools, User } from "@/api/interface";
 import { useHandleData } from "@/hooks/useHandleData";
 
 import { useAuthButtons } from "@/hooks/useAuthButtons";
@@ -57,12 +54,13 @@ import ProTable from "@/components/ProTable/index.vue";
 
 import { ProTableInstance, ColumnProps } from "@/components/ProTable/interface";
 
-import { CirclePlus, Delete, View, PictureRounded } from "@element-plus/icons-vue";
+import { CirclePlus, Delete, View, PictureRounded, UserFilled } from "@element-plus/icons-vue";
 
 import CustomerManage, { PropsParams } from "@/views/proTable/components/CustomerManage.vue";
-import { createLevel, deleteLevel, getLevelList, getLevelListById, updateLevel } from "@/api/modules/levels";
+import { createSchool, deleteSchool, getSchoolsList, getLevelListById, updateSchool } from "@/api/modules/schools";
 import LevelsDrawer, { DrawerProps } from "@/views/proTable/components/LevelsDrawer.vue";
 import { isDef } from "@/utils/is";
+import { getSchoolLabelByType, getSchoolTagByType, SchoolsTypeOptions } from "../constants";
 
 const router = useRouter();
 //该实例是否是特定的组别
@@ -94,8 +92,8 @@ const initParam = reactive<InitParmas>({});
 // 或者直接去 hooks/useTable.ts 文件中把字段改为你后端对应的就行
 const dataCallback = (data: any) => {
   return {
-    list: data.levels,
-    total: data.count
+    list: data.schools,
+    total: data.total
   };
 };
 
@@ -111,7 +109,7 @@ const getTableList = (params: any) => {
   if (isSignalGroup.value) {
     return getLevelListById(newParams);
   }
-  return getLevelList(newParams);
+  return getSchoolsList(newParams);
 };
 
 // 页面按钮权限（按钮权限既可以使用 hooks，也可以直接使用 v-auth 指令，指令适合直接绑定在按钮上，hooks 适合根据按钮权限显示不同的内容）
@@ -127,71 +125,56 @@ const { BUTTONS } = useAuthButtons();
 // };
 
 // 表格配置项
-const columns = reactive<ColumnProps<Levels.LevelsList>[]>([
-  { type: "selection", fixed: "left", width: 70 },
-  { type: "index", label: "序号", width: 80 },
+const columns = reactive<ColumnProps<Schools.SchoolsList>[]>([
   {
-    prop: "id",
-    label: "id",
+    prop: "name",
+    label: "校名",
+    search: { el: "input" },
     width: 150
   },
   {
-    prop: "name",
-    label: "等级名称",
-    search: { el: "input", tooltip: "查询等级" },
+    prop: "address",
+    label: "地址",
     width: 200,
     render: scope => {
       return (
         <el-button type="primary" link>
-          {scope.row.name}
+          {scope.row.address}
         </el-button>
       );
     }
   },
   {
-    prop: "description",
-    label: "描述"
-  },
-  { prop: "group_id", label: "所属部门", search: { el: "input" }, width: 200 },
-  {
-    // 多级 prop
-    prop: "customer_ids",
-    label: "可用画像",
-    width: 200,
+    prop: "type",
+    label: "学校类型",
+    search: { el: "select" },
+    enum: SchoolsTypeOptions,
     render: scope => {
-      return <div>{scope.row.customer_ids || "暂无"}</div>;
-    }
-  },
-  {
-    prop: "default",
-    label: "是否为默认等级",
-    width: 120,
-    render: scope => {
-      return <el-tag>{scope.row.default ? "是" : "否"}</el-tag>;
-    }
-  },
-  {
-    prop: "ctime",
-    label: "创建时间",
-    width: 180,
-    search: {
-      el: "date-picker",
-      span: 2,
-      props: { type: "datetimerange", valueFormat: "YYYY-MM-DD HH:mm:ss" }
+      return <el-tag type={getSchoolTagByType(scope.row.type)}>{getSchoolLabelByType(scope.row.type)}</el-tag>;
     },
-    render: scope => {
-      return <div>{dayjs(scope.row.ctime).format("YYYY-MM-DD HH:mm")}</div>;
-    }
+    width: 150
   },
   {
-    prop: "utime",
-    label: "上次更新时间",
+    prop: "contact",
+    label: "联系电话",
+    width: 200
+  },
+  { prop: "website", label: "官网", width: 200 },
+  { prop: "email", label: "邮箱", width: 200 },
+  { prop: "city", label: "所在城市", search: { el: "input" }, width: 200 },
+  { prop: "country", label: "所在国家", search: { el: "input" }, width: 200 },
+  { prop: "college_count", label: "学院数量", search: { el: "input-number", props: { min: 0 } }, width: 200 },
+  { prop: "major_count", label: "专业数量", search: { el: "input-number", props: { min: 0 } }, width: 200 },
+  { prop: "student_count", label: "学生人数", search: { el: "input-number", props: { min: 0 } }, width: 200 },
+  {
+    prop: "created_at",
+    label: "新增时间",
     width: 180,
     render: scope => {
-      return <div>{dayjs(scope.row.utime).format("YYYY-MM-DD HH:mm")}</div>;
+      return <div>{dayjs(scope.row.created_at).format("YYYY-MM-DD HH:mm")}</div>;
     }
   },
-  { prop: "operation", label: "操作", fixed: "right", width: 250 }
+  { prop: "operation", label: "操作", fixed: "right", width: 400 }
 ]);
 
 // 表格拖拽排序
@@ -202,36 +185,21 @@ const sortTable = ({ newIndex, oldIndex }: { newIndex?: number; oldIndex?: numbe
 };
 
 // 删除等级信息
-const deleteAccount = async (params: User.ResUserList) => {
-  await useHandleData(deleteLevel, { id: [params.id] }, `删除【${params.name}】等级`);
-  proTable.value?.getTableList();
-};
-
-// 批量删除等级信息
-const batchDelete = async (ids: string[]) => {
-  const deleteBatch = function (parmas: string[]) {
-    return new Promise((resolve, reject) => {
-      const deleteHandle = function (id: string) {
-        return deleteLevel({ id });
-      };
-      Promise.all([...parmas.map(item => deleteHandle(item))]).then(resolve, reject);
-    });
-  };
-  await useHandleData(deleteBatch, ids, "删除所选等级信息");
-  proTable.value?.clearSelection();
+const deleteAccount = async (params: Schools.SchoolsList) => {
+  await useHandleData(deleteSchool, { school_id: [params.school_id] }, `确认删除【${params.name}】及其全部·信息吗？`);
   proTable.value?.getTableList();
 };
 
 // 打开 drawer(新增、查看、编辑)
 const drawerRef = ref<InstanceType<typeof LevelsDrawer> | null>(null);
-const openDrawer = (title: string, row: Partial<User.ResUserList> = {}) => {
+const openDrawer = (title: string, row: Partial<Schools.UpdateSchool> = {}) => {
   const params: DrawerProps = {
     title,
     isAdd: title === "新增",
     isView: title === "查看",
     isEdit: title === "编辑",
     row: { ...row },
-    api: title === "新增" ? createLevel : title === "编辑" ? updateLevel : undefined,
+    api: title === "新增" ? createSchool : title === "编辑" ? updateSchool : undefined,
     getTableList: proTable.value?.getTableList
   };
   drawerRef.value?.acceptParams(params);

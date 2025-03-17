@@ -1,3 +1,5 @@
+import { SchoolType } from "@/views/schools/constants";
+
 // 请求响应参数（不包含data）
 export interface Result {
   code: string;
@@ -194,34 +196,39 @@ export namespace Group {
 }
 
 //等级模块
-export namespace Levels {
+export namespace Schools {
   export interface GetLevelsParams {
     group_id?: string;
     skip: number;
     limit: number;
   }
-  export interface LevelsList {
-    customer_ids: string;
-    id: string | number;
-    group_id: string | number;
-    ctime: string | Date;
-    description: string;
+  export interface SchoolsList {
+    address: string;
+    city: string;
+    college_count: number;
+    contact: string;
+    country: string;
+    created_at: string;
+    email: string;
+    major_count: number;
     name: string;
-    default: boolean;
-    utime: string | Date;
+    phone: string;
+    school_id: number;
+    student_count: number;
+    type: SchoolType;
+    website: string;
   }
-  export interface CreateLevel {
+  export interface CreateSchool {
+    address: string;
+    city: string;
+    contact: string;
+    country: string;
+    email: string;
     name: string;
-    description: string;
-    customer_ids: string[] | string;
-    group_id: string;
-    default: boolean;
+    type: SchoolType;
+    website: string;
   }
-  export interface UpdateLevel {
-    id: string;
-    name: string;
-    description: string;
-    customer_ids: string[];
-    default: boolean;
+  export interface UpdateSchool extends CreateSchool {
+    school_id: number;
   }
 }
