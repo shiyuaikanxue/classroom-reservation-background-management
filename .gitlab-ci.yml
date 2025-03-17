@@ -1,0 +1,87 @@
+stages:
+  - lint
+  - build
+  - build-image
+  - deploy
+
+lint:
+  image: 172.22.121.50/dockerhub/library/node:20-alpine
+  stage: lint
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-node
+    paths:
+      - node_modules/
+  tags:
+    - "k8s_runner_speech_train"
+  script:
+    - npm config set registry http://172.22.121.51:8081/repository/npm-public/
+    - npm install -g pnpm
+    - pnpm i --frozen-lockfile --registry=http://172.22.121.51:8081/repository/npm-public
+    # - pnpm run type:check
+    - pnpm run lint:eslint
+    - pnpm run lint:prettier
+    - pnpm run lint:stylelint
+
+build:
+  image: 172.22.121.50/dockerhub/library/node:20.16.0-alpine
+  stage: build
+  only:
+    refs:
+      - vitalis
+      - main
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-node
+    paths:
+      - node_modules/
+  tags:
+    - "k8s_runner_speech_train"
+  script:
+    - npm config set registry http://172.22.121.51:8081/repository/npm-public/
+    - npm install -g pnpm
+    - pnpm i --frozen-lockfile --registry=http://172.22.121.51:8081/repository/npm-public
+    - pnpm run build:pro
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - dist/
+
+build-image:
+  image:
+    name: 172.22.121.50/gcr/kaniko-project/executor:v1.23.0-debug
+    entrypoint: [""]
+  stage: build-image
+  tags:
+    - "k8s_runner_speech_train"
+  only:
+    refs:
+      - vitalis
+      - main
+  cache:
+    paths:
+      - ./cache
+  script:
+    - echo "{\"auths\":{\"${KCI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${KCI_REGISTRY_USER}" "${KCI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/warmer
+      --skip-tls-verify-pull
+      --dockerfile Dockerfile
+      --cache-dir=$CI_PROJECT_DIR/cache
+      --skip-tls-verify-registry 172.22.121.50
+    - /kaniko/executor
+      --skip-tls-verify
+      --cache-dir=$CI_PROJECT_DIR/cache
+      --dockerfile Dockerfile
+      --context .
+      --destination 172.22.121.50/speech-train/selling-expert-admin-frontend-vue:$CI_PIPELINE_IID
+
+deploy:
+  image: 172.22.121.50/dockerio/bitnami/kubectl:1.23
+  stage: deploy
+  only:
+    refs:
+      - vitalis
+      - main
+  tags:
+    - "k8s_runner_speech_train"
+  script:
+    - sed -i "s/\$CI_PIPELINE_IID/${CI_PIPELINE_IID}/g" ./deployment.yaml
+    - kubectl apply -f ./deployment.yaml
