@@ -100,7 +100,27 @@ export namespace User {
     role: string;
   }
 }
-
+export namespace Admin {
+  export interface Params {
+    school_id?: number;
+  }
+  export interface ResAdminList {
+    id: string;
+    username: string;
+    phone_number: string;
+    ctime: string;
+    admin_id: number;
+    role: string;
+    status: number;
+  }
+  export interface CreateAdmin {
+    school_id: number;
+    username: string;
+    password: string;
+    phone_number: string;
+    role: string;
+  }
+}
 //会话管理模块
 export namespace Chat {
   //会话列表的请求参数

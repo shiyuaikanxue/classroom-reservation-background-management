@@ -37,9 +37,11 @@ import { ProTableInstance } from "@/components/ProTable/interface";
 import { CirclePlus, Delete, EditPen, View } from "@element-plus/icons-vue";
 import { getUserList } from "@/api/modules/user";
 import { genderType, age_groupDict } from "@/utils/dict";
-import { get_group_customer, delete_customer } from "@/api/modules/custom";
+import { getAllColleges, delete_customer } from "@/api/modules/college";
 import { Picture as IconPicture } from "@element-plus/icons-vue";
+import { useUserStore } from "@/stores/modules/user";
 const router = useRouter();
+const user = useUserStore();
 // 跳转详情页
 const toDetail = (title, row) => {
   const pathList = {
@@ -67,27 +69,11 @@ const dataCallback = (data: any) => {
 };
 
 // 如果你想在请求之前对当前请求参数做一些操作，可以自定义如下函数：params 为当前所有的请求参数（包括分页），最后返回请求列表接口
-// 默认不做操作就直接在 ProTable 组件上绑定	:requestApi="getUserList"
 const getTableList = (params: any) => {
-  return get_group_customer(params);
-  let newParams = JSON.parse(JSON.stringify(params));
-  newParams.createTime && (newParams.startTime = newParams.createTime[0]);
-  newParams.createTime && (newParams.endTime = newParams.createTime[1]);
-  delete newParams.createTime;
-  return getUserList(newParams);
+  console.log("getTableList", user.userInfo);
+  const newParams = { ...params, school_id: user.userInfo.school_id };
+  return getAllColleges(newParams);
 };
-
-// 页面按钮权限（按钮权限既可以使用 hooks，也可以直接使用 v-auth 指令，指令适合直接绑定在按钮上，hooks 适合根据按钮权限显示不同的内容）
-// const { BUTTONS } = useAuthButtons();
-
-// 自定义渲染表头（使用tsx语法）
-// const headerRender = (scope: HeaderRenderScope<User.ResUserList>) => {
-//   return (
-//     <el-button type="primary" onClick={() => ElMessage.success("我是通过 tsx 语法渲染的表头")}>
-//       {scope.column.label}
-//     </el-button>
-//   );
-// };
 
 // 表格配置项
 // <ColumnProps<User.ResUserList>[]>

@@ -31,6 +31,21 @@
       }
     },
     {
+      "path": "/admins",
+      "name": "admins",
+      "component": "/admin/useProTable/index",
+      "meta": {
+        "icon": "Histogram",
+        "title": "管理员账号",
+        "isLink": "",
+        "isHide": true,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true,
+        "auth": true
+      }
+    },
+    {
       "path": "/college-majors",
       "name": "college-majors",
       "redirect": "/college",
@@ -47,7 +62,7 @@
         {
           "path": "/college/list",
           "name": "college",
-          "component": "/aCustomer/useProTable/index",
+          "component": "/college-majors/college/useProTable/index",
           "meta": {
             "icon": "Menu",
             "title": "学院列表",
@@ -61,7 +76,7 @@
         {
           "path": "/majors/list",
           "name": "majors",
-          "component": "/aCustomer/useProTable/detail",
+          "component": "/college-majors/majors/useProTable/index",
           "meta": {
             "icon": "Menu",
             "title": "专业列表",

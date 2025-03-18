@@ -26,8 +26,8 @@ export const router_taskClassify = params => {
 };
 //customer/group_customer
 //画像列表
-export const get_group_customer = params => {
-  return http.post(PORT2 + `/customer/group_customer/list`, params, { loading: false }); // 控制当前请求不显示 loading
+export const getAllColleges = params => {
+  return http.get(`/college`, params, { loading: false }); // 控制当前请求不显示 loading
 };
 //画像信息
 export const get_router_data = id => {

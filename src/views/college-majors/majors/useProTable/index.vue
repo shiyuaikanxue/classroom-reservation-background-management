@@ -276,7 +276,7 @@ import { ElMessage } from "element-plus";
 import { FormInstance } from "element-plus";
 import UploadImg from "@/components/Upload/Img.vue";
 // import UploadImgs from "@/components/Upload/Imgs.vue";
-import { router_new, update_customer, router_taskClassify, get_router_data } from "@/api/modules/custom";
+import { router_new, update_customer, router_taskClassify, get_router_data } from "@/api/modules/college";
 const router = useRouter();
 const route = useRoute();
 // // 获取 id

@@ -20,7 +20,7 @@
           <el-option v-for="item in options" :key="item.id" :value="item.id" :label="item.name">
             <template #default>
               <div style="display: flex; gap: 10px; align-items: center">
-                <img :src="item.avatar" style=" width: 20px;height: 100%" alt="" />
+                <img :src="item.avatar" style="width: 20px; height: 100%" alt="" />
                 <div class="name">{{ item.name }}</div>
                 <el-tag class="sex">{{ item.gender == "Male" ? "男" : "女" }}</el-tag>
                 <div class="difficulty">{{ item.difficulty }}</div>
@@ -45,7 +45,7 @@ import { ref, reactive } from "vue";
 import { genderType } from "@/utils/dict";
 import { ElMessage, FormInstance } from "element-plus";
 import { Group } from "@/api/interface";
-import { get_group_customer } from "@/api/modules/custom";
+import { get_group_customer } from "@/api/modules/college";
 //表单校验规则
 const rules = reactive({
   name: [

@@ -63,7 +63,7 @@
 
 <script setup lang="ts" name="SuperCustomerManage">
 import { Group } from "@/api/interface";
-import { get_group_customer, getGroupCustomerListByGroupId } from "@/api/modules/custom";
+import { get_group_customer, getGroupCustomerListByGroupId } from "@/api/modules/college";
 import { computed, ref } from "vue";
 import { Customer } from "./GroupDrawer.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
