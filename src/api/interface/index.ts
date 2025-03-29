@@ -215,7 +215,7 @@ export namespace Group {
   }
 }
 
-//等级模块
+//学校模块
 export namespace Schools {
   export interface GetLevelsParams {
     group_id?: string;
@@ -250,5 +250,38 @@ export namespace Schools {
   }
   export interface UpdateSchool extends CreateSchool {
     school_id: number;
+  }
+}
+//学院模块
+export namespace Colleges {
+  export interface CollegesList {
+    college_id: number;
+    name: string;
+    school_id: number;
+  }
+  export interface CreateColleges {
+    name: string;
+    school_id: number;
+  }
+  export interface ResponseList {
+    colleges: CollegesList[]; // 学院列表
+    total: number; // 总记录数
+  }
+  export interface ResponseData {
+    currentPage: number; // 当前页码
+    data: ResponseList;
+    totalPages: number; // 总页数
+  }
+}
+//专业模块
+export namespace Majors {
+  export interface MajorsList {
+    major_id: number;
+    name: string;
+    college_id: number;
+  }
+  export interface CreateMajors {
+    name: string;
+    college_id: number;
   }
 }

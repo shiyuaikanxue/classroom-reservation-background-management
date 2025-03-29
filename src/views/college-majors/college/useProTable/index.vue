@@ -9,17 +9,17 @@
       @drag-sort="sortTable"
     >
       <!-- 表格 header 按钮 -->
-      <template #tableHeader="">
-        <el-button v-auth="'add'" type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增画像</el-button>
+      <template #tableHeader>
+        <el-button type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增学院</el-button>
       </template>
       <!-- 表格操作 -->
       <template #operation="scope">
         <el-button type="primary" link :icon="View" @click="openDrawer('查看', scope.row)">查看</el-button>
         <el-button type="primary" link :icon="EditPen" @click="openDrawer('编辑', scope.row)">编辑</el-button>
-        <el-button type="primary" link :icon="Delete" @click="deleteAccount(scope.row)">删除</el-button>
+        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
       </template>
     </ProTable>
-    <ImportExcel ref="dialogRef" />
+    <CollegeDrawer ref="drawerRef" />
   </div>
 </template>
 
@@ -27,31 +27,16 @@
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useHandleData } from "@/hooks/useHandleData";
-// import { useDownload } from "@/hooks/useDownload";
-// import { useAuthButtons } from "@/hooks/useAuthButtons";
 import { ElMessage } from "element-plus";
 import ProTable from "@/components/ProTable/index.vue";
-import ImportExcel from "@/components/ImportExcel/index.vue";
-// import UserDrawer from "@/views/proTable/components/UserDrawer.vue";
 import { ProTableInstance } from "@/components/ProTable/interface";
-import { CirclePlus, Delete, EditPen, View } from "@element-plus/icons-vue";
 import { getUserList } from "@/api/modules/user";
-import { genderType, age_groupDict } from "@/utils/dict";
-import { getAllColleges, delete_customer } from "@/api/modules/college";
+import { getAllColleges, addCollege, editCollege, deleteCollege } from "@/api/modules/college";
 import { Picture as IconPicture } from "@element-plus/icons-vue";
 import { useUserStore } from "@/stores/modules/user";
+import CollegeDrawer from "@/views/proTable/components/CollegeDrawer.vue";
 const router = useRouter();
 const user = useUserStore();
-// 跳转详情页
-const toDetail = (title, row) => {
-  const pathList = {
-    新增: "/customer/list/add",
-    编辑: `/customer/list/edit/${row.router_id}`,
-    查看: `/customer/list/detail/${row.router_id}`
-  };
-  let path = pathList[title];
-  router.push({ path, query: { params: title } });
-};
 
 // ProTable 实例
 const proTable = ref<ProTableInstance>();
@@ -63,15 +48,15 @@ const initParam = reactive({});
 // 或者直接去 hooks/useTable.ts 文件中把字段改为你后端对应的就行
 const dataCallback = (data: any) => {
   return {
-    list: data.list,
+    list: data.colleges,
     total: data.total
   };
 };
 
 // 如果你想在请求之前对当前请求参数做一些操作，可以自定义如下函数：params 为当前所有的请求参数（包括分页），最后返回请求列表接口
 const getTableList = (params: any) => {
-  console.log("getTableList", user.userInfo);
-  const newParams = { ...params, school_id: user.userInfo.school_id };
+  const { pageNum, pageSize, ...rest } = params;
+  const newParams = { limit: pageSize, skip: (pageNum - 1) * pageSize, school_id: user.userInfo.school_id, ...rest };
   return getAllColleges(newParams);
 };
 
@@ -80,146 +65,39 @@ const getTableList = (params: any) => {
 const columns = reactive<any>([
   { type: "index", label: "序号", width: 80, fixed: "left" },
   {
-    prop: "avatar",
-    label: "客户头像",
-    width: 200,
-    render: scope => {
-      return (
-        <el-image
-          style="width: 25px; height: 25px"
-          src={scope.row.avatar}
-          preview-teleported
-          fit="contain"
-          preview-src-list={[scope.row.avatar]}
-          v-slots={{
-            error: () => (
-              <>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                  {/* <ElIcon>
-                     <el-icon :size="size" :color="color">
-                    <IconPicture />
-                  </ElIcon> */}
-
-                  <el-icon>
-                    <IconPicture />
-                  </el-icon>
-                </div>
-              </>
-            )
-          }}
-        ></el-image>
-      );
-    }
-  },
-  {
     prop: "name",
-    label: "客户名称",
-    width: 200,
-    search: { el: "input", tooltip: "查询画像" }
-    // fixed: "left"
+    label: "学院名称",
+    width: 200
   },
   {
-    prop: "age_group",
-    label: "年龄",
-    tag: true,
-    isShow: true,
-    enum: age_groupDict,
-    search: { el: "select", props: { filterable: true } },
-    fieldNames: { label: "label", value: "value" },
-    render: scope => {
-      return <>{scope.row.age_group == "Middle" ? <el-tag type="warning">中年</el-tag> : <el-tag type="success">青年</el-tag>}</>;
-    }
+    prop: "major_count",
+    label: "专业数量",
+    width: 200
   },
   {
-    prop: "gender",
-    label: "性别",
-    tag: true,
-    isShow: true,
-    enum: genderType,
-    search: { el: "select", props: { filterable: true } },
-    fieldNames: { label: "label", value: "value" },
-    render: scope => {
-      return <>{scope.row.gender == "Male" ? <el-tag type="primary">男</el-tag> : <el-tag type="danger">女</el-tag>}</>;
-    }
+    prop: "student_count",
+    label: "学生数量",
+    width: 200
   },
-  {
-    prop: "ctime",
-    label: "创建时间",
-    // headerRender,
-    search: {
-      el: "date-picker",
-      span: 1,
-      props: { type: "daterange", valueFormat: "YYYY-MM-DD" },
-      defaultValue: []
-    }
-  },
-  { prop: "operation", label: "操作", fixed: "right", width: 330 }
+  { prop: "operation", label: "操作", fixed: "right" }
 ]);
 
-// 表格拖拽排序
-const sortTable = ({ newIndex, oldIndex }: { newIndex?: number; oldIndex?: number }) => {
-  console.log(newIndex, oldIndex);
-  console.log(proTable.value?.tableData);
-  ElMessage.success("修改列表排序成功");
-};
-
 // 删除用户信息
-const deleteAccount = async (params: any) => {
-  await useHandleData(delete_customer, params.router_id, `删除【${params.name}】用户`);
+const handleDelete = async (params: any) => {
+  await useHandleData(deleteCollege, params, `删除【${params.name}】学院`);
   proTable.value?.getTableList();
 };
-
-// 批量删除用户信息
-// const batchDelete = async (id: string[]) => {
-//   await useHandleData(delete_customer, { id }, "删除所选用户信息");
-//   proTable.value?.clearSelection();
-//   proTable.value?.getTableList();
-// };
-
-// 重置用户密码
-// const resetPass = async (params: User.ResUserList) => {
-//   await useHandleData(resetUserPassWord, { id: params.id }, `重置【${params.username}】用户密码`);
-//   proTable.value?.getTableList();
-// };
-
-// 切换用户状态
-// const changeStatus = async (row: User.ResUserList) => {
-//   await useHandleData(changeUserStatus, { id: row.id, status: row.status == 1 ? 0 : 1 }, `切换【${row.username}】用户状态`);
-//   proTable.value?.getTableList();
-// };
-
-// 导出用户列表
-// const downloadFile = async () => {
-//   ElMessageBox.confirm("确认导出用户数据?", "温馨提示", { type: "warning" }).then(() =>
-//     useDownload(exportUserInfo, "用户列表", proTable.value?.searchParam)
-//   );
-// };
-
-// 批量添加用户
-const dialogRef = ref<InstanceType<typeof ImportExcel> | null>(null);
-// const batchAdd = () => {
-//   const params = {
-//     title: "用户",
-//     tempApi: exportUserInfo,
-//     importApi: BatchAddUser,
-//     getTableList: proTable.value?.getTableList
-//   };
-//   // dialogRef.value?.acceptParams(params);
-// };
-
 // 打开 drawer(新增、查看、编辑)
-// const drawerRef = ref<InstanceType<typeof UserDrawer> | null>(null);
+const drawerRef = ref<InstanceType<typeof CollegeDrawer> | null>(null);
 const openDrawer = (title: string, row: any = {}) => {
-  // const params = {
-  //   title,
-  //   isView: title === "查看",
-  //   row: { ...row }
-  //   // api: title === "add" ? addUser : title === "edit" ? editUser : undefined,
-  //   // getTableList: proTable.value?.getTableList
-  // };
-  // drawerRef.value?.acceptParams(params);
-  // let paramsRow: any = JSON.stringify(params);
-  toDetail(title, row);
+  const params = {
+    title,
+    isView: title === "查看",
+    row: { ...row, school_id: user.userInfo.school_id },
+    api: title === "新增" ? addCollege : title === "编辑" ? editCollege : undefined,
+    getTableList: proTable.value?.getTableList
+  };
+  drawerRef.value?.acceptParams(params);
 };
 </script>
 <style scoped></style>
