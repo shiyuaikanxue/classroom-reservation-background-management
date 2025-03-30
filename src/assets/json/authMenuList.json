@@ -92,7 +92,7 @@
     {
       "path": "/classroom",
       "name": "classroom",
-      "component": "/aUser/useTreeFilter/index",
+      "component": "/classroom/useProTable/index",
       "meta": {
         "icon": "Avatar",
         "title": "教室管理",

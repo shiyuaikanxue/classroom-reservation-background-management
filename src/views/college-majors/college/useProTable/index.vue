@@ -1,13 +1,6 @@
 <template>
   <div class="table-box">
-    <ProTable
-      ref="proTable"
-      :columns="columns"
-      :request-api="getTableList"
-      :init-param="initParam"
-      :data-callback="dataCallback"
-      @drag-sort="sortTable"
-    >
+    <ProTable ref="proTable" :columns="columns" :request-api="getTableList" :init-param="initParam" :data-callback="dataCallback">
       <!-- 表格 header 按钮 -->
       <template #tableHeader>
         <el-button type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增学院</el-button>
@@ -82,7 +75,6 @@ const columns = reactive<any>([
   { prop: "operation", label: "操作", fixed: "right" }
 ]);
 
-// 删除用户信息
 const handleDelete = async (params: any) => {
   await useHandleData(deleteCollege, params, `删除【${params.name}】学院`);
   proTable.value?.getTableList();
