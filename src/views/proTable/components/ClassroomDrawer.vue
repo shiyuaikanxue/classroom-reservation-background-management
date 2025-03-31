@@ -132,7 +132,7 @@ const handleSubmit = () => {
     try {
       const params = JSON.parse(JSON.stringify(drawerProps.value.row));
       await drawerProps.value.api!(params);
-      ElMessage.success({ message: `${drawerProps.value?.title}专业成功！` });
+      ElMessage.success({ message: `${drawerProps.value?.title}教室成功！` });
       drawerProps.value.getTableList!();
       drawerVisible.value = false;
     } catch (error) {

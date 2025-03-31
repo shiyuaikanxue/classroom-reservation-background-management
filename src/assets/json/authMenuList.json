@@ -20,7 +20,7 @@
       "name": "schools",
       "component": "/schools/useProTable/index",
       "meta": {
-        "icon": "Histogram",
+        "icon": "School",
         "title": "学校管理",
         "isLink": "",
         "isHide": false,
@@ -50,7 +50,7 @@
       "name": "college-majors",
       "redirect": "/college",
       "meta": {
-        "icon": "Comment",
+        "icon": "DataBoard",
         "title": "学院专业",
         "isLink": "",
         "isHide": false,
@@ -64,7 +64,7 @@
           "name": "college",
           "component": "/college-majors/college/useProTable/index",
           "meta": {
-            "icon": "Menu",
+            "icon": "DataAnalysis",
             "title": "学院列表",
             "isLink": "",
             "isHide": false,
@@ -78,7 +78,7 @@
           "name": "majors",
           "component": "/college-majors/majors/useProTable/index",
           "meta": {
-            "icon": "Menu",
+            "icon": "Postcard",
             "title": "专业列表",
             "isLink": "",
             "isHide": false,
@@ -94,8 +94,22 @@
       "name": "classroom",
       "component": "/classroom/useProTable/index",
       "meta": {
-        "icon": "Avatar",
+        "icon": "Film",
         "title": "教室管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/classes",
+      "name": "classes",
+      "component": "/classes/useProTable/index",
+      "meta": {
+        "icon": "GoldMedal",
+        "title": "班级管理",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -106,9 +120,9 @@
     {
       "path": "/students",
       "name": "students",
-      "component": "/department/useProTable/index",
+      "component": "/students/useProTable/index",
       "meta": {
-        "icon": "Operation",
+        "icon": "ReadingLamp",
         "title": "学生管理",
         "isLink": "",
         "isHide": false,
