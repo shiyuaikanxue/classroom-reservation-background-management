@@ -74,7 +74,7 @@ const columns = reactive<ColumnProps[]>([
     search: { el: "select" },
     enum: GenderOptions,
     render: scope => {
-      return <el-text type="success">{scope.row.password}</el-text>;
+      return <el-text type="success">{getGenderTag(scope.row.gender).label}</el-text>;
     },
     width: 120
   },

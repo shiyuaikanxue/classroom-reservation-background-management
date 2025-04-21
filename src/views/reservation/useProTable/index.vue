@@ -131,7 +131,11 @@ const columns = reactive<ColumnProps[]>([
     label: "时间点",
     width: 220,
     render: scope => {
-      return <el-tag type={getClassDividedTag(scope.row.time_slot).type}>{getClassDividedTag(scope.row.time_slot).label}</el-tag>;
+      return (
+        <el-tag type={getClassDividedTag(scope.row.time_slot).type}>
+          {getClassDividedTag(scope.row.time_slot).label || scope.row.time_slot}
+        </el-tag>
+      );
     }
   },
   {
