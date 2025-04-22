@@ -46,6 +46,50 @@
       }
     },
     {
+      "path": "/consultation",
+      "name": "consultation",
+      "redirect": "/college",
+      "meta": {
+        "icon": "ChatLineRound",
+        "title": "咨询管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/announcement",
+          "name": "announcement",
+          "component": "/consultation/announcement/useProTable/index",
+          "meta": {
+            "icon": "ChatLineSquare",
+            "title": "公告",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/notifications",
+          "name": "notifications",
+          "component": "/consultation/notifications/useProTable/index",
+          "meta": {
+            "icon": "ChatDotSquare",
+            "title": "通知",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        }
+      ]
+    },
+    {
       "path": "/college-majors",
       "name": "college-majors",
       "redirect": "/college",
