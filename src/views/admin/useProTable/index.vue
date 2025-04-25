@@ -36,7 +36,7 @@ import { ProTableInstance, ColumnProps } from "@/components/ProTable/interface";
 
 import { CirclePlus, Delete, View, PictureRounded, UserFilled } from "@element-plus/icons-vue";
 import AdminDrawer from "@/views/proTable/components/AdminDrawer.vue";
-import { getAdminList, createAdmin } from "@/api/modules/admin";
+import { getAdminList, createAdmin, updateAdmin } from "@/api/modules/admin";
 import { PropsParams } from "@/views/proTable/components/CustomerManage.vue";
 import { deleteSchool, updateSchool } from "@/api/modules/schools";
 import { DrawerProps } from "@/views/proTable/components/SchoolsDrawer.vue";
@@ -104,6 +104,16 @@ const columns = reactive<ColumnProps<Admin.ResAdminList>[]>([
     width: 200
   },
   {
+    prop: "office_location",
+    label: "办公地点",
+    width: 200
+  },
+  {
+    prop: "responsibility",
+    label: "责任",
+    width: 200
+  },
+  {
     prop: "created_at",
     label: "创建时间",
     width: 180,
@@ -129,7 +139,7 @@ const openDrawer = (title: string, row: Partial<Schools.UpdateSchool> = {}) => {
     isView: title === "查看",
     isEdit: title === "编辑",
     row: { ...row },
-    api: title === "新增" ? createAdmin : title === "编辑" ? updateSchool : undefined,
+    api: title === "新增" ? createAdmin : title === "编辑" ? updateAdmin : undefined,
     getTableList: proTable.value?.getTableList
   };
   drawerRef.value?.acceptParams(params, school_id.value);

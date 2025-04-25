@@ -64,11 +64,11 @@
 
 <script setup lang="ts" name="CustomerManage">
 import { Group } from "@/api/interface";
-import { getGroupCustomerListByGroupId } from "@/api/modules/college";
+// import { getGroupCustomerListByGroupId } from "@/api/modules/college";
 import { computed, ref } from "vue";
 import { Customer } from "./GroupDrawer.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { updateGroup } from "@/api/modules/groups";
+// import { updateGroup } from "@/api/modules/groups";
 import { Picture } from "@element-plus/icons-vue";
 import { useAuthStore } from "@/stores/modules/auth";
 import { useRouter } from "vue-router";

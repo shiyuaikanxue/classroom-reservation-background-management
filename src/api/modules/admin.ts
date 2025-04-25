@@ -11,3 +11,7 @@ export const getAdminList = (params: Admin.Params) => {
 export const createAdmin = (params: Admin.CreateAdmin) => {
   return http.post<Admin.ResAdminList>(`/admin/addAdmin`, params);
 };
+export const updateAdmin = params => {
+  const { admin_id, ...rest } = params;
+  return http.put<Admin.ResAdminList>(`/admin/updateAdmin/${admin_id}`, rest);
+};

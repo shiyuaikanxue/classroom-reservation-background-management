@@ -15,6 +15,12 @@
       <el-form-item label="密码" prop="password">
         <el-input v-model="drawerProps.row!.password" placeholder="请填写密码" clearable></el-input>
       </el-form-item>
+      <el-form-item label="办公地点" prop="office_location">
+        <el-input v-model="drawerProps.row!.office_location" placeholder="请填写办公地点" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="责任" prop="responsibility">
+        <el-input v-model="drawerProps.row!.responsibility" placeholder="请填写负责审核环" clearable></el-input>
+      </el-form-item>
       <el-form-item label="电话" prop="phone_number">
         <el-input v-model="drawerProps.row!.phone_number" placeholder="请填写电话号码" clearable></el-input>
       </el-form-item>
@@ -65,7 +71,6 @@ const acceptParams = async (params: DrawerProps, school_id: number) => {
   drawerProps.value = params;
   drawerVisible.value = true;
   my_school_id.value = school_id;
-  console.log(my_school_id.value);
 };
 
 // 提交数据（新增/编辑）
